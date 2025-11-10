@@ -1,84 +1,104 @@
+#include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
-
-WiFiClientSecure client;
-PubSubClient mqtt(client);
-
-#define LED 2
 
 const char* SSID = "FIESC_IOT_EDU";
 const char* PASS = "8120gv08";
 
-const char* BROKER_URL = "7aecec580ecf4e5cbac2d52b35eb85b9.s1.eu.hivemq.cloud";
-const int BROKER_PORT = 8883;
-const char* BROKER_USER = "Placa-2-Jaison";
-const char* BROKER_PASS = "123456abX";
+const char* BROKER = "2941e5c6678a4be18375b50465ad0964.s1.eu.hivemq.cloud";
+const int PORT = 8883;
 
-const char* TOPIC_SEND = "Jaison";
-const char* TOPIC_RECEIVE = "Joao";
+const char* BROKER_USER = "Placa-S2-Jaison";
+const char* BROKER_PASS = "SAdojoao10";
+
+#define PINO_LED 2
+#define PINO_SENSOR 4
+
+const char* TOPICO_PUBLISH = "Projeto/S2/Presenca";
+const char* TOPICO_SUBSCRIBE = "Projeto/S2/LED";
+
+WiFiClientSecure espClient;
+PubSubClient mqtt(espClient);
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  String msg = "";
-  for (unsigned int i = 0; i < length; i++) msg += (char)payload[i];
-  Serial.print("Recebido de ");
+  String mensagem;
+  for (int i = 0; i < length; i++) {
+    mensagem += (char)payload[i];
+  }
+
+  Serial.print("Mensagem recebida em ");
   Serial.print(topic);
   Serial.print(": ");
-  Serial.println(msg);
-  if (msg == "Joao: Acender") {
-    digitalWrite(LED, HIGH);
-    Serial.println("LED ligado");
-  } else if (msg == "Joao: Apagar") {
-    digitalWrite(LED, LOW);
-    Serial.println("LED desligado");
+  Serial.println(mensagem);
+
+  if (mensagem == "ligar") {
+    digitalWrite(PINO_LED, HIGH);
+    Serial.println("LED ligado via MQTT");
+  } 
+  else if (mensagem == "desligar") {
+    digitalWrite(PINO_LED, LOW);
+    Serial.println("LED desligado via MQTT");
   }
 }
 
-void conectarWiFi() {
-  Serial.print("Conectando ao Wi-Fi ");
-  Serial.print(SSID);
+void conectaWiFi() {
+  Serial.print("Conectando à rede Wi-Fi: ");
+  Serial.println(SSID);
   WiFi.begin(SSID, PASS);
+
   while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
     Serial.print(".");
-    delay(300);
   }
-  Serial.println("\nWi-Fi conectado");
-  Serial.print("IP: ");
+
+  Serial.println("\nWi-Fi conectado com sucesso!");
+  Serial.print("Endereço IP: ");
   Serial.println(WiFi.localIP());
 }
 
-void conectarMQTT() {
-  Serial.print("Conectando ao broker MQTT");
+void conectaMQTT() {
+  mqtt.setServer(BROKER, PORT);
+  mqtt.setCallback(callback);
+  espClient.setInsecure();
+
   while (!mqtt.connected()) {
-    String id = "ESP32_";
-    id += String(random(0xffff), HEX);
-    if (mqtt.connect(id.c_str(), BROKER_USER, BROKER_PASS)) {
-      Serial.println("\nConectado ao broker");
-      mqtt.subscribe(TOPIC_RECEIVE);
+    String clientId = "S2_" + String(random(0xffff), HEX);
+    Serial.print("Conectando ao broker MQTT... ");
+    if (mqtt.connect(clientId.c_str(), BROKER_USER, BROKER_PASS)) {
+      Serial.println("Conectado com sucesso!");
+      mqtt.subscribe(TOPICO_SUBSCRIBE);
+      Serial.print("Inscrito no tópico: ");
+      Serial.println(TOPICO_SUBSCRIBE);
     } else {
-      Serial.print(".");
-      delay(500);
+      Serial.print("Falha (rc=");
+      Serial.print(mqtt.state());
+      Serial.println("). Tentando novamente...");
+      delay(2000);
     }
   }
 }
 
 void setup() {
-  pinMode(LED, OUTPUT);
   Serial.begin(115200);
-  conectarWiFi();
-  client.setInsecure();
-  mqtt.setServer(BROKER_URL, BROKER_PORT);
-  mqtt.setCallback(callback);
-  conectarMQTT();
+  pinMode(PINO_LED, OUTPUT);
+  pinMode(PINO_SENSOR, INPUT);
+
+  conectaWiFi();
+  conectaMQTT();
 }
 
 void loop() {
-  if (!mqtt.connected()) conectarMQTT();
-  if (Serial.available() > 0) {
-    String msg = "Jaison: ";
-    msg += Serial.readStringUntil('\n');
-    mqtt.publish(TOPIC_SEND, msg.c_str());
-    Serial.print("Enviado: ");
-    Serial.println(msg);
+  if (!mqtt.connected()) {
+    conectaMQTT();
   }
   mqtt.loop();
+
+  int presenca = digitalRead(PINO_SENSOR);
+  String mensagem = String(presenca);
+  mqtt.publish(TOPICO_PUBLISH, mensagem.c_str());
+
+  Serial.print("Detecção de presença: ");
+  Serial.println(presenca);
+
+  delay(2000);
 }
