@@ -18,7 +18,7 @@ Servo servo4;
 const char* SSID = "FIESC_IOT_EDU";
 const char* PASS = "8120gv08";
 
-const char* BROKER_URL  = "7aecec580ecf4e5cbac2d52b35eb85b9.s1.eu.hivemq.cloud";
+const char* BROKER_URL  = "2941e5c6678a4be18375b50465ad0964.s1.eu.hivemq.cloud";
 const int   BROKER_PORT = 8883;
 const char* BROKER_USER = "Placa-3-Joao";
 const char* BROKER_PASS = "123456abX";
