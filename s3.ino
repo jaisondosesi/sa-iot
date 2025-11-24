@@ -55,7 +55,7 @@ const char* PASS = "8120gv08";         // Senha do WiFi
 // ------------------------------
 const char* BROKER_URL  = "2941e5c6678a4be18375b50465ad0964.s1.eu.hivemq.cloud"; // Endereço do broker
 const int   BROKER_PORT = 8883;        // Porta segura TLS
-const char* BROKER_USER = "Placa-3-Joao";  // Usuário MQTT
+const char* BROKER_USER = "Placa-S3-Joao";  // Usuário MQTT
 const char* BROKER_PASS = "123456abX";     // Senha MQTT
 
 
