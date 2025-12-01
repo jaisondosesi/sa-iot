@@ -12,7 +12,7 @@ const String PASS = "8120gv08";
 const String URL   = "2941e5c6678a4be18375b50465ad0964.s1.eu.hivemq.cloud";
 const int PORT     = 8883;
 const String broker_USR   = "Placa-S1-Eduardo";
-const String broker_PASS  = "SAEduardo1";
+const String broker_PASS  = "SAdojoao10";
 
 const String MyTopic = "sensor/comando";
 const String OtherTopic = "sensor/distancia";
