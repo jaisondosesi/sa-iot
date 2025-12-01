@@ -8,7 +8,7 @@ const char* PASS = "8120gv08";
 const char* BROKER = "2941e5c6678a4be18375b50465ad0964.s1.eu.hivemq.cloud";
 const int PORT = 8883;
 
-const char* BROKER_USER = "Placa-S2-Jaison";
+const char* BROKER_USER = "Placa-S2-Joao";
 const char* BROKER_PASS = "SAdojoao10";
 
 #define PINO_LED 2
