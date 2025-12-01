@@ -8,11 +8,11 @@ PubSubClient mqtt(client);
 const char* SSID = "FIESC_IOT_EDU";
 const char* PASS = "8120gv08";
 
-const char* URL = "test.mosquitto.org";
+const char* URL = "2941e5c6678a4be18375b50465ad0964.s1.eu.hivemq.cloud";
 const int PORT = 8883;
 
-const char* MyTopic = "Eduardo";
-const char* OtherTopic = "joao";
+const char* TOPICO_PUBLISH = "Projeto/S2/Presenca";
+const char* TOPICO_SUBSCRIBE = "Projeto/S2/LED";
 
 void setup() {
   Serial.begin(115200);
