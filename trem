@@ -11,8 +11,8 @@ const char* PASS = "8120gv08";
 const char* URL = "2941e5c6678a4be18375b50465ad0964.s1.eu.hivemq.cloud";
 const int PORT = 8883;
 
-const char* TOPICO_PUBLISH = "Projeto/S2/Presenca";
-const char* TOPICO_SUBSCRIBE = "Projeto/S2/LED";
+const char* TOPICO_PUBLISH = "Projeto/trem/Presenca";
+const char* TOPICO_SUBSCRIBE = "Projeto/trem/LED";
 
 void setup() {
   Serial.begin(115200);
@@ -25,7 +25,7 @@ void setup() {
   Serial.println("\nWiFi conectado!");
   mqtt.setServer(URL, PORT);
   while (!mqtt.connected()) {
-    String clientId = "Gabriel_";
+    String clientId = "Projeto/trem/Presenca";
     clientId += String(random(0xffff), HEX);
     mqtt.connect(clientId.c_str());
     delay(200);
@@ -39,7 +39,7 @@ void loop() {
     comando.trim();
 
     if (comando == "Ligue" || comando == "Apague") {
-      mqtt.publish(OtherTopic, comando.c_str());
+      mqtt.publish(TOPICO_PUBLISH, comando.c_str());
       Serial.println("Comando enviado: " + comando);
     } else {
       Serial.println("Digite 'Ligue' ou 'Apague'");
